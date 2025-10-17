@@ -9,7 +9,7 @@ export default function Home() {
           This is the best app for tracking your mood through out your life. All you have to do is to be honest.
         </p>
         <div>
-          <Link href={"/journal"}>
+          <Link href={"/new-user"}>
             <button className="bg-blue-600 p-4 rounded-lg">Get Started</button>
           </Link>
         </div> 
