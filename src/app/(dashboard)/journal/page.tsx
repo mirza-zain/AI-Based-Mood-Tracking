@@ -6,14 +6,20 @@ import { prisma } from "../../../../utilis/db"
 
 const getEntries = async ( ) => {
     const user = await getUserByClerkID()
+    if (!user) return []
     const entries = await prisma.journalEntry.findMany({
         where: {
             userId: user.id,
+        },
+        include: {
+            analysis: true,
         },
         orderBy: {
             createdAt: 'desc',
         }
     })
+
+   
     return entries
 }
 
@@ -24,7 +30,7 @@ const JournalPage = async () => {
             <h2 className="text-3xl mb-5">Journal</h2>
             <div className="grid grid-cols-3 gap-4">
                 <NewEntryCard />
-                {entries.map((entry) => (
+                {entries.map((entry: any) => (
                     <Link href={`/journal/${entry.id}`} key={entry.id} >
                         <EntryCard entry={entry}/>
                     </Link>

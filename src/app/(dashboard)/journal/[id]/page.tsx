@@ -4,12 +4,19 @@ import { prisma } from "../../../../../utilis/db"
 
 const getEntry = async (id: string) => {
     const user = await getUserByClerkID()
-    const entry = await prisma.journalEntry.findUnique({
+    if (!user) {
+        throw new Error("User not authenticated")
+    }
+    const entry = await prisma.journalEntry.findUniqueOrThrow({
         where: {
             userId_id: {
                 userId: user.id,
                 id,
             }
+        },
+        
+        include: {
+            analysis: true,
         }
     })
 
@@ -17,13 +24,10 @@ const getEntry = async (id: string) => {
 }
 
 
-const EntryPage = async ({params}: {params: {id: string}}) => {
-    const entry = await getEntry(params.id)
-    
-    if (!entry) {
-        return <div>Entry not found</div>
-    }
-    
+const EntryPage = async ({params}: {params: Promise<{id: string}>}) => {
+    const {id} = await params
+    const entry = await getEntry(id)
+   
     return (
         <div className="h-full w-full">
             <Editor entry={entry} />
