@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { askQuestion } from "../utilis/api"
+import { askQuestion } from "../../utilis/api"
 
 const Question = () => {
     const [value, setValue] = useState('')

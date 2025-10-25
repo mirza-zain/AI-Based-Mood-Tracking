@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAutosave } from "react-autosave"
-import { updateEntry, deleteEntry } from "../utilis/api"
+import { updateEntry, deleteEntry } from "../../utilis/api"
 
 const Editor = ({entry}: {entry: any}) => {
     const router = useRouter()

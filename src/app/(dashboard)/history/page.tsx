@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import HistoryCharts from "../../../../Components/HistoryCharts"
+import HistoryCharts from "../../../components/HistoryCharts"
 
 const History = () => {
     const [data, setData] = useState<any>([])

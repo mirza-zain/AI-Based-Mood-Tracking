@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from "next/navigation"
-import { createNewEntry } from "../utilis/api"
+import { createNewEntry } from "../../utilis/api"
 
 const NewEntryCard = () => {
     const router = useRouter()

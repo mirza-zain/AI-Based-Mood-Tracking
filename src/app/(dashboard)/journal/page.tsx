@@ -1,9 +1,9 @@
 import Link from "next/link"
-import EntryCard from "../../../../Components/EntryCard"
-import NewEntryCard from "../../../../Components/NewEntryCard"
+import EntryCard from "../../../components/EntryCard"
+import NewEntryCard from "../../../components/NewEntryCard"
 import { getUserByClerkID } from "../../../../utilis/auth"
 import { prisma } from "../../../../utilis/db"
-import Question from "../../../../Components/Question"
+import Question from "../../../components/Question"
 
 const getEntries = async ( ) => {
     const user = await getUserByClerkID()

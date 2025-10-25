@@ -1,4 +1,4 @@
-import Editor from "../../../../../Components/Editor"
+import Editor from "../../../../components/Editor"
 import { getUserByClerkID } from "../../../../../utilis/auth"
 import { prisma } from "../../../../../utilis/db"
 
