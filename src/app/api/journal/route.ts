@@ -38,9 +38,7 @@ export const POST = async (req: Request) => {
         await prisma.analysis.create({
             data: {
                 entryId: entry.id,
-                user: {
-                    connect: { id: user.id }
-                },
+                userId: user.id,
                 mood: analysis.mood,
                 summary: analysis.summary,
                 subject: analysis.subject,
