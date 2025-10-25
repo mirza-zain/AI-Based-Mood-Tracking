@@ -31,10 +31,18 @@ export const PATCH = async (request: Request, {params}: {params: Promise<{id: st
         create: {
             userId: user.id,
             entryId: updatedEntry.id,
-            ...analysis
+            mood: analysis.mood,
+            summary: analysis.summary,
+            subject: analysis.subject,
+            color: analysis.color,
+            negative: analysis.negative,
         },
         update: {
-            ...analysis
+            mood: analysis.mood,
+            summary: analysis.summary,
+            subject: analysis.subject,
+            color: analysis.color,
+            negative: analysis.negative,
         },
     })
 

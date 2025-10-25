@@ -39,7 +39,11 @@ export const POST = async (req: Request) => {
             data: {
                 userId: user.id,
                 entryId: entry.id,
-                ...analysis
+                mood: analysis.mood,
+                summary: analysis.summary,
+                subject: analysis.subject,
+                color: analysis.color,
+                negative: analysis.negative,
             }
         })
     } catch (error) {
