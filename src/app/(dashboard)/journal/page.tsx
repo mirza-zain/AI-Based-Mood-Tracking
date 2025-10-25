@@ -1,8 +1,9 @@
 import Link from "next/link"
-import EntryCard from "../../../../components/EntryCard"
-import NewEntryCard from "../../../../components/NewEntryCard"
+import EntryCard from "../../../../Components/EntryCard"
+import NewEntryCard from "../../../../Components/NewEntryCard"
 import { getUserByClerkID } from "../../../../utilis/auth"
 import { prisma } from "../../../../utilis/db"
+import Question from "../../../../Components/Question"
 
 const getEntries = async ( ) => {
     const user = await getUserByClerkID()
@@ -26,12 +27,15 @@ const getEntries = async ( ) => {
 const JournalPage = async () => {
     const entries = await getEntries()
     return (
-        <div className="p-10 bg-zinc-400/10"> 
-            <h2 className="text-3xl mb-5">Journal</h2>
+        <div className="p-10 bg-zinc-400/10 h-full"> 
+            <h2 className="text-3xl mb-8">Journal</h2>
+            <div className="mb-8">
+                <Question />    
+            </div>
             <div className="grid grid-cols-3 gap-4">
                 <NewEntryCard />
                 {entries.map((entry: any) => (
-                    <Link href={`/journal/${entry.id}`} key={entry.id} >
+                    <Link href={`/journal/${entry.id}`} key={entry.id}>
                         <EntryCard entry={entry}/>
                     </Link>
                 ))}

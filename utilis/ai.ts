@@ -1,10 +1,16 @@
 import { ChatGroq } from '@langchain/groq'
 import { StructuredOutputParser } from "@langchain/core/output_parsers"
 import { PromptTemplate } from "@langchain/core/prompts"
+import { Document } from '@langchain/core/documents'
 import { z } from "zod"
 
 const parser = StructuredOutputParser.fromZodSchema(
   z.object({
+    sentimentScore: z
+      .number()
+      .describe(
+        'sentiment of the text and rated on a scale from -10 to 10, where -10 is extremely negative, 0 is neutral, and 10 is extremely positive. Just give the number and nothing else'
+      ),
     mood: z
       .string()
       .describe('the mood of the person who wrote the journal entry.'),
@@ -29,10 +35,10 @@ const getPrompt = async (content: string) => {
 {entry}
 
 IMPORTANT: Return ONLY this JSON structure, nothing else:
-{{"mood": "one word mood", "subject": "topic", "summary": "one sentence summary", "negative": true/false, "color": "#HEXCODE"}}
+{{"mood": "one word mood", "subject": "topic", "summary": "one sentence summary", "negative": true/false, "color": "#HEXCODE", "sentimentScore": 5}}
 
 Example response:
-{{"mood": "happy", "subject": "family time", "summary": "About watching movies with family.", "negative": false, "color": "#FFD700"}}`,
+{{"mood": "happy", "subject": "family time", "summary": "About watching movies with family.", "negative": false, "color": "#FFD700", "sentimentScore": 8}}`,
         inputVariables: ['entry'],
     })
 
@@ -117,4 +123,55 @@ export const analyze = async (content: string) => {
         color: '#808080',
       }
     }
+}
+export const qa = async (questions: any, entries: any) => {
+  if (!questions || !entries || entries.length === 0) {
+    return "Please provide a question and have some journal entries first."
+  }
+
+  const model = new ChatGroq({
+    model: "llama-3.1-8b-instant",
+    temperature: 0,
+    apiKey: process.env.GROQ_API_KEY,
+  })
+  
+  // Simple keyword-based search (no external embeddings API needed)
+  const questionWords = questions.toLowerCase().split(/\s+/).filter((w: string) => w.length > 3)
+  
+  const scoredEntries = entries.map((entry: any) => {
+    const content = entry.content.toLowerCase()
+    const score = questionWords.filter((word: string) => content.includes(word)).length
+    return { entry, score }
+  })
+  
+  const relevantDocs = scoredEntries
+    .sort((a: any, b: any) => b.score - a.score)
+    .slice(0, 5)
+    .map((item: any) => item.entry)
+  
+  const res = await model.invoke(`
+Based on these journal entries, answer this question: "${questions}"
+
+Entries:
+${relevantDocs.map((entry: any) => entry.content).join('\n---\n')}
+
+Answer in 1-2 sentences only:
+  `)
+
+  // Get the answer and summarize it if it's too long
+  let answer = typeof res.content === 'string' ? res.content : String(res)
+  
+  // If answer is more than 3 sentences, summarize it
+  const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0)
+  if (sentences.length > 2) {
+    const summary = await model.invoke(`
+Summarize this answer in just 1-2 sentences:
+"${answer}"
+
+Summary:
+    `)
+    answer = typeof summary.content === 'string' ? summary.content : String(summary)
+  }
+
+  return answer.trim()
 }

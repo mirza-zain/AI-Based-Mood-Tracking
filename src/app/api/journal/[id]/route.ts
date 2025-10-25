@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache"
 import { analyze } from "../../../../../utilis/ai"
 import { getUserByClerkID } from "../../../../../utilis/auth"
 import { prisma } from "../../../../../utilis/db"
@@ -30,6 +29,7 @@ export const PATCH = async (request: Request, {params}: {params: Promise<{id: st
             entryId: updatedEntry.id,
         },
         create: {
+            userId: user.id,
             entryId: updatedEntry.id,
             ...analysis
         },
@@ -39,4 +39,44 @@ export const PATCH = async (request: Request, {params}: {params: Promise<{id: st
     })
 
     return NextResponse.json({data: {...updatedEntry, analysis: updated}})
+}
+
+export const DELETE = async (
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) => {
+    try {
+        const { id } = await params
+        const user = await getUserByClerkID()
+
+        if (!user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        // Verify the entry belongs to the user
+        const entry = await prisma.journalEntry.findUnique({
+            where: { id }
+        })
+
+        if (!entry || entry.userId !== user.id) {
+            return NextResponse.json({ error: "Entry not found" }, { status: 404 })
+        }
+
+        // Delete the analysis first (due to foreign key constraint)
+        await prisma.analysis.deleteMany({
+            where: {
+                entryId: id
+            }
+        })
+
+        // Then delete the entry
+        await prisma.journalEntry.delete({
+            where: { id }
+        })
+
+        return NextResponse.json({ success: true })
+    } catch (error) {
+        console.error("Delete error:", error)
+        return NextResponse.json({ error: "Failed to delete entry" }, { status: 500 })
+    }
 }
