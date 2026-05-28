@@ -44,6 +44,7 @@ export const POST = async (req: Request) => {
                 subject: analysis.subject,
                 color: analysis.color,
                 negative: analysis.negative,
+                sentimentScore: analysis.sentimentScore,
             }
         })
     } catch (error) {

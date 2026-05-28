@@ -50,15 +50,15 @@ Example response:
 }
 
 export const analyze = async (content: string) => {
-    const input = await getPrompt(content)
-    const model = new ChatGroq({ 
-        model: "llama-3.1-8b-instant",
-        temperature: 0,
-        apiKey: process.env.GROQ_API_KEY,
-    })
-    const result = await model.invoke(input)
-    
     try {
+      const input = await getPrompt(content)
+      const model = new ChatGroq({ 
+          model: "llama-3.1-8b-instant",
+          temperature: 0,
+          apiKey: process.env.GROQ_API_KEY,
+      })
+      const result = await model.invoke(input)
+      
       // Extract the string content from the result
       const resultText = typeof result.content === 'string' ? result.content : String(result)
       console.log('🔵 Groq raw response:', resultText.substring(0, 500))
@@ -121,57 +121,63 @@ export const analyze = async (content: string) => {
         negative: false,
         summary: 'Unable to analyze entry',
         color: '#808080',
+        sentimentScore: 0,
       }
     }
 }
 export const qa = async (questions: any, entries: any) => {
-  if (!questions || !entries || entries.length === 0) {
-    return "Please provide a question and have some journal entries first."
-  }
+  try {
+    if (!questions || !entries || entries.length === 0) {
+      return "Please provide a question and have some journal entries first."
+    }
 
-  const model = new ChatGroq({
-    model: "llama-3.1-8b-instant",
-    temperature: 0,
-    apiKey: process.env.GROQ_API_KEY,
-  })
+    const model = new ChatGroq({
+      model: "llama-3.1-8b-instant",
+      temperature: 0,
+      apiKey: process.env.GROQ_API_KEY,
+    })
+    
+    // Simple keyword-based search (no external embeddings API needed)
+    const questionWords = questions.toLowerCase().split(/\s+/).filter((w: string) => w.length > 3)
+    
+    const scoredEntries = entries.map((entry: any) => {
+      const content = entry.content.toLowerCase()
+      const score = questionWords.filter((word: string) => content.includes(word)).length
+      return { entry, score }
+    })
+    
+    const relevantDocs = scoredEntries
+      .sort((a: any, b: any) => b.score - a.score)
+      .slice(0, 5)
+      .map((item: any) => item.entry)
+    
+    const res = await model.invoke(`
+  Based on these journal entries, answer this question: "${questions}"
   
-  // Simple keyword-based search (no external embeddings API needed)
-  const questionWords = questions.toLowerCase().split(/\s+/).filter((w: string) => w.length > 3)
+  Entries:
+  ${relevantDocs.map((entry: any) => entry.content).join('\n---\n')}
   
-  const scoredEntries = entries.map((entry: any) => {
-    const content = entry.content.toLowerCase()
-    const score = questionWords.filter((word: string) => content.includes(word)).length
-    return { entry, score }
-  })
-  
-  const relevantDocs = scoredEntries
-    .sort((a: any, b: any) => b.score - a.score)
-    .slice(0, 5)
-    .map((item: any) => item.entry)
-  
-  const res = await model.invoke(`
-Based on these journal entries, answer this question: "${questions}"
-
-Entries:
-${relevantDocs.map((entry: any) => entry.content).join('\n---\n')}
-
-Answer in 1-2 sentences only:
-  `)
-
-  // Get the answer and summarize it if it's too long
-  let answer = typeof res.content === 'string' ? res.content : String(res)
-  
-  // If answer is more than 3 sentences, summarize it
-  const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0)
-  if (sentences.length > 2) {
-    const summary = await model.invoke(`
-Summarize this answer in just 1-2 sentences:
-"${answer}"
-
-Summary:
+  Answer in 1-2 sentences only:
     `)
-    answer = typeof summary.content === 'string' ? summary.content : String(summary)
-  }
 
-  return answer.trim()
+    // Get the answer and summarize it if it's too long
+    let answer = typeof res.content === 'string' ? res.content : String(res)
+    
+    // If answer is more than 3 sentences, summarize it
+    const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0)
+    if (sentences.length > 2) {
+      const summary = await model.invoke(`
+  Summarize this answer in just 1-2 sentences:
+  "${answer}"
+  
+  Summary:
+      `)
+      answer = typeof summary.content === 'string' ? summary.content : String(summary)
+    }
+
+    return answer.trim()
+  } catch (error) {
+    console.error("❌ QA error:", error)
+    return "Unable to answer your question at this time. Please make sure GROQ_API_KEY is properly set up in your environment."
+  }
 }

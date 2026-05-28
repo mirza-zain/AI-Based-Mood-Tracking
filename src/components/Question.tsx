@@ -24,28 +24,36 @@ const Question = () => {
 
     return (
         <div className="space-y-4">
-            <form onSubmit={handleSubmit} className="flex gap-2">
+            <form onSubmit={handleSubmit} className="flex gap-3">
                 <input 
                     disabled={loading}
                     onChange={onChange} 
                     value={value} 
                     type="text" 
                     placeholder="Ask a question about your entries..."
-                    className="flex-1 border border-gray-300 px-4 py-2 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    className="flex-1 border border-gray-200 px-4 py-3 rounded-xl text-base focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 disabled:bg-gray-50 transition-all placeholder:text-gray-400"
                 />
                 <button 
                     disabled={loading} 
                     type="submit" 
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold px-6 py-2 rounded-lg transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-md shadow-blue-600/10 flex items-center justify-center min-w-[80px]"
                 >
                     {loading ? 'Asking...' : 'Ask'}
                 </button>
             </form>
-            {loading && <div className="text-gray-500 text-sm">Searching your entries...</div>}
+            {loading && (
+                <div className="flex items-center gap-2 text-gray-400 text-sm animate-pulse">
+                    <svg className="animate-spin h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Searching your entries...</span>
+                </div>
+            )}
             {response && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-blue-900 mb-2">Answer:</p>
-                    <p className="text-gray-700 leading-relaxed">{response}</p>
+                <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Answer</p>
+                    <p className="text-gray-700 leading-relaxed text-sm">{response}</p>
                 </div>
             )}
         </div>

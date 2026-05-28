@@ -1,39 +1,25 @@
-import { UserButton } from "@clerk/nextjs"
-import Link from "next/link";
 import { PropsWithChildren } from "react";
+import { getUserByClerkID } from "../../../utilis/auth"
+import UserMenu from "../../components/UserMenu"
+import Sidebar from "../../components/Sidebar"
 
-const links = [
-    {'href': '/', 'label': 'Home'},
-    {'href': '/journal', 'label': 'Journal'},
-    {'href': '/history', 'label': 'History'},
-]
+const DashboardLayout = async ({children}: PropsWithChildren) => {
+    const user = await getUserByClerkID()
 
-const DashboardLayout = ({children}: PropsWithChildren) => {
     return (
-        <div className="w-screen h-screen relative">
-            <aside className="absolute w-[200px] top-0 left-0 h-full border-r border-black/10">
-                <div className="px-4 py-4 border-b border-black/10">
-                    <h1 className="text-lg font-semibold">Mood</h1>
-                </div>
-                <ul>
-                    {
-                        links.map((link) => (
-                            <li key={link.href} className="px-4 py-4 text-lg">
-                                <Link href={link.href}>
-                                    {link.label}
-                                </Link>
-                            </li>
-                        ))
-                    }
-                </ul>
-            </aside>
-            <div className="ml-[200px] h-full">
-                <header className="h-[60px] border-b border-black/10">
-                    <div className="h-full w-full px-6 flex items-center justify-end">
-                        <UserButton />
+        <div className="flex h-screen w-screen overflow-hidden bg-gray-50/30">
+            <Sidebar />
+            <div className="flex-1 flex flex-col h-full overflow-hidden">
+                <header className="h-16 border-b border-gray-200/50 bg-white flex items-center justify-between px-8 shadow-sm z-10">
+                    <h2 className="text-xl font-bold text-gray-800">
+                    </h2>
+                    <div>
+                        {user && <UserMenu user={{ name: user.name, email: user.email }} />}
                     </div>  
                 </header>
-                <div className="h-[calc(100vh-60px)]">{children}</div>
+                <main className="flex-1 overflow-auto bg-gray-50/50">
+                    {children}
+                </main>
             </div>
         </div>
     )

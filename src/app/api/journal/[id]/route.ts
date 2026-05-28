@@ -36,6 +36,7 @@ export const PATCH = async (request: Request, {params}: {params: Promise<{id: st
             subject: analysis.subject,
             color: analysis.color,
             negative: analysis.negative,
+            sentimentScore: analysis.sentimentScore,
         },
         update: {
             mood: analysis.mood,
@@ -43,6 +44,7 @@ export const PATCH = async (request: Request, {params}: {params: Promise<{id: st
             subject: analysis.subject,
             color: analysis.color,
             negative: analysis.negative,
+            sentimentScore: analysis.sentimentScore,
         },
     })
 

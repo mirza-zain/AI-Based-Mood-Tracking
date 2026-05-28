@@ -27,15 +27,20 @@ const getEntries = async ( ) => {
 const JournalPage = async () => {
     const entries = await getEntries()
     return (
-        <div className="p-10 bg-zinc-400/10 h-full"> 
-            <h2 className="text-3xl mb-8">Journal</h2>
-            <div className="mb-8">
+        <div className="max-w-7xl mx-auto px-8 py-10 space-y-8"> 
+            <div>
+                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Your Journal</h1>
+                <p className="text-sm text-gray-500 mt-1">Record your thoughts, ask questions, and reflect on your days.</p>
+            </div>
+
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                 <Question />    
             </div>
-            <div className="grid grid-cols-3 gap-4">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <NewEntryCard />
                 {entries.map((entry: any) => (
-                    <Link href={`/journal/${entry.id}`} key={entry.id}>
+                    <Link href={`/journal/${entry.id}`} key={entry.id} className="focus:outline-none">
                         <EntryCard entry={entry}/>
                     </Link>
                 ))}
