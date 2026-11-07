@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
   const isPublic =
     pathname === "/" ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/health") ||
     pathname.startsWith("/_next") ||
     pathname.includes(".") // static files
   ;

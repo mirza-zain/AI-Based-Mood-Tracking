@@ -13,20 +13,31 @@ export const setSession = async (userId: string) => {
   cookieStore.set("userId", userId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7, // 1 week
     path: "/",
   })
 }
 
 export const getSession = async () => {
-  const cookieStore = await cookies()
-  const userIdCookie = cookieStore.get("userId")
-  return userIdCookie?.value
+  try {
+    const cookieStore = await cookies()
+    const userIdCookie = cookieStore.get("userId")
+    return userIdCookie?.value
+  } catch (err) {
+    return null
+  }
 }
 
 export const clearSession = async () => {
   const cookieStore = await cookies()
-  cookieStore.delete("userId")
+  cookieStore.set("userId", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  })
 }
 
 // Retrieves current authenticated user. Keeps name compatibility with existing routes.
@@ -34,11 +45,15 @@ export const getUserByClerkID = async () => {
   const userId = await getSession()
   if (!userId) return null
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  })
-
-  return user
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    })
+    return user
+  } catch (error) {
+    console.error("Error retrieving user from session:", error)
+    return null
+  }
 }
