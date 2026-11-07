@@ -1,9 +1,9 @@
 import Editor from "../../../../components/Editor"
-import { getUserByClerkID } from "../../../../../utilis/auth"
+import { getCurrentUser } from "../../../../../utilis/auth"
 import { prisma } from "../../../../../utilis/db"
 
 const getEntry = async (id: string) => {
-    const user = await getUserByClerkID()
+    const user = await getCurrentUser()
     if (!user) {
         throw new Error("User not authenticated")
     }

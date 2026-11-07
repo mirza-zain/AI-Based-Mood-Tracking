@@ -1,12 +1,12 @@
 import { analyze } from "../../../../../utilis/ai"
-import { getUserByClerkID } from "../../../../../utilis/auth"
+import { getCurrentUser } from "../../../../../utilis/auth"
 import { prisma } from "../../../../../utilis/db"
 import { NextResponse } from "next/server"
 
 export const PATCH = async (request: Request, {params}: {params: Promise<{id: string}>}) => {
     const {id} = await params
     const {content} = await request.json()
-    const user = await getUserByClerkID()
+    const user = await getCurrentUser()
     if (!user) {
         return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
     }
@@ -57,7 +57,7 @@ export const DELETE = async (
 ) => {
     try {
         const { id } = await params
-        const user = await getUserByClerkID()
+        const user = await getCurrentUser()
 
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

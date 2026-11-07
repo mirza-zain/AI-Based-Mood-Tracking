@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
-import { getUserByClerkID } from "../../../../utilis/auth"
+import { getCurrentUser } from "../../../../utilis/auth"
 import { prisma } from "../../../../utilis/db"
 import { revalidatePath } from "next/cache"
 import { analyze } from "../../../../utilis/ai"
 
 export const POST = async (req: Request) => {
-    const user = await getUserByClerkID()
+    const user = await getCurrentUser()
     
     if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 401 })

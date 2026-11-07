@@ -3,24 +3,22 @@
 ### Prerequisites
 
 - Node.js 18+ (recommended 20+)
-- pnpm or npm
-- Clerk account for auth (or disable middleware if not using yet)
+- npm or pnpm
+- PostgreSQL Database (e.g., Neon PostgreSQL)
+- Groq API Key (for AI analysis)
 
 ### Setup
 
-1. Install dependencies
-	- npm: `npm install`
-	- pnpm: `pnpm install`
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-2. Configure environment variables in `.env.local`:
-
-	Required for Clerk:
-	- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-	- CLERK_SECRET_KEY=
-
-	Optional (when using auth redirects):
-	- NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-	- NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+2. Configure environment variables in `.env`:
+   ```bash
+   DATABASE_URL="postgresql://user:password@endpoint.neon.tech/neondb?sslmode=require"
+   GROQ_API_KEY="gsk_..."
+   ```
 
 ### Scripts
 
@@ -32,12 +30,8 @@
 
 ### Notable Routes
 
-- `/` Landing page
-- `/new-user` Placeholder page
-- `/sign-in` Clerk sign-in
-- `/sign-up` Clerk sign-up
-- `/api/health` API health check
-
-### Notes
-
-- Middleware is configured to require auth for all routes except `/`, `/sign-in`, and `/sign-up`. Adjust `src/middleware.ts` as needed.
+- `/` Landing page & Authentication (Sign up / Log in)
+- `/journal` User's journal entries list & entry creation
+- `/journal/[id]` Journal entry editor with live AI mood analysis
+- `/history` Visual mood history charts & sentiment trends
+- `/api/health` Live database and connection health check

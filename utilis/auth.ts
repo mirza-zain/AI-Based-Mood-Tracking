@@ -40,8 +40,8 @@ export const clearSession = async () => {
   })
 }
 
-// Retrieves current authenticated user. Keeps name compatibility with existing routes.
-export const getUserByClerkID = async () => {
+// Retrieves current authenticated user from session
+export const getCurrentUser = async () => {
   const userId = await getSession()
   if (!userId) return null
 
@@ -53,7 +53,9 @@ export const getUserByClerkID = async () => {
     })
     return user
   } catch (error) {
-    console.error("Error retrieving user from session:", error)
+    console.error("Error retrieving current user:", error)
     return null
   }
 }
+
+export const getUser = getCurrentUser

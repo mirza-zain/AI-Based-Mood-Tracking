@@ -12,7 +12,6 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.33.6",
     "@huggingface/inference": "^4.13.0",
     "@langchain/classic": "^1.0.0",
     "@langchain/community": "^1.0.0",

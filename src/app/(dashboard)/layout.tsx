@@ -1,10 +1,10 @@
 import { PropsWithChildren } from "react";
-import { getUserByClerkID } from "../../../utilis/auth"
+import { getCurrentUser } from "../../../utilis/auth"
 import UserMenu from "../../components/UserMenu"
 import Sidebar from "../../components/Sidebar"
 
 const DashboardLayout = async ({children}: PropsWithChildren) => {
-    const user = await getUserByClerkID()
+    const user = await getCurrentUser()
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-gray-50/30">
