@@ -53,7 +53,7 @@ export const analyze = async (content: string) => {
     try {
       const input = await getPrompt(content)
       const model = new ChatGroq({ 
-          model: "llama-3.1-8b-instant",
+          model: "gpt-oss-120b",
           temperature: 0,
           apiKey: process.env.GROQ_API_KEY,
       })
